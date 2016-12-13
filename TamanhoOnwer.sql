@@ -1,4 +1,5 @@
---Consultar Owner, tablespace padrão e o tamanho que o owner está ocupando dentro da tablespace contendo o subtotal 
+--Consultar Owner, tablespace padrão e o tamanho que o owner está ocupando dentro da tablespace, contendo o subtotal dos produtos
+--Executar script conectado com SYS/SYSTEM ou usuarios com grants equivalentes.  
 
 SELECT DECODE (c.owner, NULL, 'TOTAL', c.owner) AS "Owner",
        DECODE (c.tablespace_name,
@@ -20,5 +21,6 @@ SELECT DECODE (c.owner, NULL, 'TOTAL', c.owner) AS "Owner",
          --    AND tablespace_name <> 'USERS'
          --    AND tablespace_name <> 'SYSTEM'
          --    AND tablespace_name <> 'UNDOTBS1'
+         -- WHERE tablespace_name not in('SYS','SYSAUX','USERS','SYSTEM','UNDOTBS1') 
         GROUP BY CUBE (owner, tablespace_name)
         ORDER BY owner, tablespace_name ASC) c;
