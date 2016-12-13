@@ -1,15 +1,24 @@
- SELECT
-	C.OWNER as "Owner",
-	C.TABLESPACE_NAME "Tablespace padrao",
-	CASE 
-		WHEN C.BYTES < 1 THEN ROUND(C.BYTES*1024,2) || ' KB '  
-		WHEN C.BYTES <1024 THEN ROUND(C.BYTES,2) || ' MB '  
-		ELSE ROUND(C.BYTES/1024,2) ||  ' GB '
-	END as "Tamanho"
-FROM (SELECT OWNER AS OWNER,
-	TABLESPACE_NAME  AS TABLESPACE_NAME,                                  
-	SUM(BYTES/1024/1024) AS BYTES                                         
-FROM DBA_SEGMENTS                                                         
---WHERE TABLESPACE_NAME<>'SYS' AND TABLESPACE_NAME<>'SYSAUX' AND TABLESPACE_NAME<>'USERS' AND TABLESPACE_NAME<>'SYSTEM' AND TABLESPACE_NAME<>'UNDOTBS1'                                              
-GROUP BY OWNER,TABLESPACE_NAME                                            
-ORDER BY OWNER DESC)C; 
+--Consultar Owner, tablespace padrão e o tamanho que o owner está ocupando dentro da tablespace contendo o subtotal 
+
+SELECT DECODE (c.owner, NULL, 'TOTAL', c.owner) AS "Owner",
+       DECODE (c.tablespace_name,
+               NULL, '- SubTotal -',
+               c.tablespace_name
+              ) AS "Tablespace Padrão",
+       CASE
+          WHEN c.BYTES < 1
+             THEN ROUND (c.BYTES * 1024, 2) || ' KB '
+          WHEN c.BYTES < 1024
+             THEN ROUND (c.BYTES, 2) || ' MB '
+          ELSE ROUND (c.BYTES / 1024, 2) || ' GB '
+       END AS "Tamanho"
+  FROM (SELECT   owner AS owner, tablespace_name AS tablespace_name,
+                 SUM (BYTES / 1024 / 1024) AS BYTES
+            FROM dba_segments
+         --  WHERE tablespace_name <> 'SYS'
+         --    AND tablespace_name <> 'SYSAUX'
+         --    AND tablespace_name <> 'USERS'
+         --    AND tablespace_name <> 'SYSTEM'
+         --    AND tablespace_name <> 'UNDOTBS1'
+        GROUP BY CUBE (owner, tablespace_name)
+        ORDER BY owner, tablespace_name ASC) c;
