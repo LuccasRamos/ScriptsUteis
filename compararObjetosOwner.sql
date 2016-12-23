@@ -1,3 +1,4 @@
+--Script deve ser aplicado com usuarios sys/system, ou equivalentes. 
 (SELECT                                                                   
 	CASE                                                                  
 		WHEN OBJECT_TYPE = 'PROCEDURE' THEN 'PROCEDURE ' || OBJECT_NAME 
