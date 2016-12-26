@@ -1,4 +1,3 @@
-/* Formatted on 2016/12/26 09:46 (Formatter Plus v4.8.8) */
 SET SERVEROUTPUT ON
 
 CREATE OR REPLACE PROCEDURE prc_tabelabkp (nometabela IN VARCHAR2)
