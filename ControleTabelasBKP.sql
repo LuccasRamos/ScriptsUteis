@@ -16,6 +16,8 @@ AS
            AND ut.table_name = uo.object_name
       ORDER BY table_name ASC;
 BEGIN
+   DBMS_OUTPUT.put_line
+         ('************************************************************************');
    DBMS_OUTPUT.put_line (   'COMANDO: CREATE TABLE '
                          || nometabela
                          || '_BKP_'
@@ -98,6 +100,9 @@ EXCEPTION
                                   || criado_em
                                  );
          END LOOP;
+		 CLOSE listatabela;
+		 DBMS_OUTPUT.put_line
+         ('************************************************************************');
       END IF;
-END;
+END prc_tabelabkp;
 /
