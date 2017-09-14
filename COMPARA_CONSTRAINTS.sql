@@ -1,13 +1,7 @@
-===================================================================================
+==========================================================================================================================
 # MAPEIO DE CONSTRAINTS ENTRE DOIS SCHEMAS
-===================================================================================
-CREATE OR REPLACE DATABASE LINK DBLINK
-CONNECT TO WM912 IDENTIFIED BY ADMDADOSPWD 
-USING 'MXMMOD';  
-
-MXM\MRJ01B-NTB007
-@DBLINK
-
+# OBS: SCRIPT DEVE SER APLICADO COM USUARIO SYS/SYSTEM OU COM PERMISSÕES EQUIVALENTES NAS VIEWS UTILIZADAS NA QUERY
+===========================================================================================================================
 SET LINES 1000
 SET SERVEROUTPUT ON 
 SPOOL GERA_CONSTRAINTS.sql
@@ -120,4 +114,6 @@ BEGIN
 END; 
 /
 SPOOL OFF
+===================================================================================
+FIM SCRIPT
 ===================================================================================
