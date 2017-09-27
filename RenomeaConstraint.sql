@@ -1,22 +1,31 @@
---Bloco criado para renomear constraints que são criadas com a nomeclatura padrão do oracle 
-
+SPOOL RENAME_CONSTRAINTS.SQL
 DECLARE
-	contraint_name1 varchar2(40); 
-	cursor c1 is SELECT t2.constraint_name, t1.table_name, t2.column_name
+	V_SUFIXO VARCHAR2(3);
+	V_COMANDO VARCHAR2(4000);
+	V_COUNT_CONSTRAINT INT:=0; 
+	CURSOR C1 IS SELECT T2.CONSTRAINT_NAME, T1.TABLE_NAME, T2.COLUMN_NAME, T1.CONSTRAINT_TYPE
   FROM    USER_CONSTRAINTS T1
        JOIN
           USER_CONS_COLUMNS T2
-       ON     T1.constraint_name = T2.CONSTRAINT_NAME
-         -- AND t1.table_name = 'NOT_NULL'
-          AND t2.constraint_name like 'SYS_%'; 
-	r1 c1%rowtype;
+       ON     T1.CONSTRAINT_NAME = T2.CONSTRAINT_NAME
+         -- AND T1.TABLE_NAME = '' --Caso a pesquisa seja realizada em uma tabela especifica
+          AND T2.CONSTRAINT_NAME LIKE 'SYS_%'; 
+	R1 C1%ROWTYPE;
 BEGIN 
-	open c1; 
-	loop 
-		fetch c1 into r1; 
-		exit when c1%notfound;
-		dbms_output.put_line('ALTER TABLE '||r1.table_name||' rename constraint '||r1.constraint_name||' TO '||r1.column_name||'_CK');
-		execute immediate 'ALTER TABLE '||r1.table_name||' rename constraint '||r1.constraint_name||' TO '||r1.column_name||'_CK';
-	end loop;
+	OPEN C1; 
+	LOOP 
+		FETCH C1 
+			INTO R1; 
+			EXIT WHEN C1%NOTFOUND;	
+			IF R1.CONSTRAINT_TYPE = 'C' THEN V_SUFIXO:='_CK'; END IF; 
+			IF R1.CONSTRAINT_TYPE = 'P' THEN V_SUFIXO:='_PK'; END IF;
+			IF R1.CONSTRAINT_TYPE = 'R' THEN V_SUFIXO:='_FK'; END IF;
+			IF R1.CONSTRAINT_TYPE = 'U' THEN V_SUFIXO:='_UK'; END IF;
+			V_COMANDO :=  'ALTER TABLE '||R1.TABLE_NAME||' RENAME CONSTRAINT '||R1.CONSTRAINT_NAME||' TO '||R1.COLUMN_NAME||V_SUFIXO||';';
+			DBMS_OUTPUT.PUT_LINE(V_COMANDO||CHR(10));
+			V_COUNT_CONSTRAINT:=V_COUNT_CONSTRAINT+1;
+	END LOOP;
+	DBMS_OUTPUT.PUT_LINE('Encontradas '||V_COUNT_CONSTRAINT||' constraints.');
 END;
 /
+SPOOL OFF
