@@ -1,0 +1,203 @@
+PAT -> 278854
+PAT -> 278789
+====================================
+*            SENAC-MS			   *
+====================================
+*Senac/MS                          *
+*Usuário: brunocruz                *
+*Senha: 5kh1jr                     *
+*Domínio: senacms                  *
+====================================
+C:\app\lucas.souza\product\12.1.0\dbhome_1
+
+
+====================================
+Query: planilha
+Usuário: UMXMMONITOR
+Senha: TISUPORTE
+Porta: 1521
+Service: ADHOSPRD
+Warning: 5
+Critical: 1
+Mensagem anterior: Descrição depois do -
+Parametro de Comparação: Greater
+Authentication Level: em branco 
+ 
+IMP system/123@localhost:1521/PDB02 FILE=C:\SENACMS\bkp_contingencia_senacms\BKP_MANAGER[11-08-2017].DMP LOG=N STATISTICS=NONE GRANTS=N FROMUSER=MANAGER TOUSER=MANAGER ROWS=N
+ 
+CREATE SMALLFILE TABLESPACE "MXMIDAD"
+DATAFILE 'C:\app\lucas.souza\oradata\CDB02\PDB02\MXMIDAD_01.DBF' 
+SIZE 500M AUTOEXTEND ON NEXT 50M MAXSIZE 2000M,
+'C:\app\lucas.souza\oradata\CDB02\PDB02\MXMIDAD_02.DBF'
+SIZE 500M AUTOEXTEND ON NEXT 50M MAXSIZE 2000M 
+LOGGING
+EXTENT MANAGEMENT LOCAL
+SEGMENT SPACE MANAGEMENT AUTO 
+DEFAULT NOCOMPRESS;
+
+SELECT OBJECT_TYPE, COUNT(OBJECT_NAME) AS "QTD_OBJECTS" FROM USER_OBJECTS GROUP BY OBJECT_TYPE
+ 
+TNS- 04414 -> --SOLUÇÃO: iniciar LISTENER após configuração do serviço
+
+DB_NAME="CDB02" 
+--verifica se o banco é container
+SELECT NAME, CDB, CON_ID CON_DBID FROM V$DATABASE;
+--verifica os containers no banco
+SELECT CON_ID, NAME FROM V$CONTAINERS;
+--Verifica os PDBS  
+SELECT PDB_ID, PDB_NAME, DBID,STATUS FROM DBA_PDBS;
+--verifica o parametro ENABLE_PLUGGABLE_DATABASE.
+SHOW PARAMETER ENABLE_PLUGGABLE_DATABASE 
+
+--criação de um novo Db plugavel
+CREATE PLUGGABLE DATABASE PDB02
+ADMIN USER PDB_ADMIN IDENTIFIED BY MANAGER
+FILE_NAME_CONVERT = 
+(
+'C:\app\lucas.souza\oradata\CDB02\pdbseed',
+'C:\app\lucas.souza\oradata\CDB02\PDB02'
+);  
+
+--VERIFICAR O STATUS DOS PDBS 
+SELECT T2.con_id, 
+	   T2.name, 
+	   T2.dbid, 
+	   T1.status, 
+	   T2.open_mode, 
+	   T2.total_size 
+FROM 
+DBA_PDBS T1,
+V$PDBS T2 
+WHERE T2.CON_ID=T1.PDB_ID  
+--abrir o banco plugavel 
+ALTER PLUGGABLE DATABASE PDB02 OPEN READ WRITE;
+--verifica serviços
+SELECT NAME, PDB FROM V$SERVICES;
+--Verifica ambiente 
+show con_name;
+--DataFiles
+SELECT FILE_ID, FILE_NAME FROM DBA_DATA_FILES;
+--SET CONTAINER 
+SET SESSION SET CONTAINER = CDB$ROOT;  
+
+--FECHANDO BANCO DE DADOS
+ALTER PLUGGABLE DATABASE PDB02 CLOSE IMMEDIATE; 
+--ABRINDO BANCO DE DADOS 
+ALTER PLUGGABLE DATABASE PDB02 OPEN;  
+--ABRINDO TODOS OS BANCOS DE DADOS 
+ALTER PLUGGABLE DATABASE PDB02 ALL OPEN;  
+
+system/123@localhost:1521/CDB01 
+	system/123@localhost:1521/PDB01
+		++
+	system/123@localhost:1521/PDB02
+		++ 
+
+SELECT SYS_CONTEXT('USERENV','CON_NAME') FROM DUAL;  
+
+--+ Usuarios Comuns ( presentes em usuarios roots e usuarios PDB'S)
+--+ Usuarios Locais  ( Presentes em usuarios PDB'S apenas)  
+
+CREATE USER GLOBAL C##GLOBAL IDENTIFIED BY GLOBAL 
+GRANT CREATE SESSION TO C##GLOBAL container=ALL; 
+
+
+--startup 
+ALTER PLUGGABLE DATABASE PDB01 OPEN ; 
+ALTER PLUGGABLE DATABASE PDB01 OPEN READ ONLY
+ALTER PLUGGABLE DATABASE PDB01,PDB02 OPEN; 
+ALTER PLUGGABLE DATABASE ALL OPEN; 
+STARTUP PUGGABLE DATABASE PDB01; 
+ALTER SESSION SET CONTAINER=PDB01; | startup 
+
+--shutdown 
+ALTER PLUGGABLE DATABASE PDB01 CLOSE IMMEDIATE; 
+ALTER PLUGGABLE DATABASE ALL CLOSE IMMEDIATE;
+ALTER PLUGGABLE DATABASE ALL EXCEPT PDB02 CLOSE IMMEDIATE;
+SQLPLUS SYS/123@PDB01 AS SYSDBA | SHUTDOWN IMMEDIATE; 
+
+V$PDBS, DBA_PDBS
+
+ 
+bkp_impar (file://Mrj01b-ntb004/bkp_impar)
+https://mxmti-my.sharepoint.com/personal/lucas_souza_mxm_com_br/_layouts/15/guestaccess.aspx?guestaccesstoken=1TTSArZn8OVMPWkwunoeq3y%2ffH5p7Kb7PklfcjDTolk%3d&folderid=2_1dcec2e80890f4439a1f8b078f7294efb&rev=1
+C:\app\lucas.souza\product\12.1.0\dbhome_1\assistants\dbca\templates\{DB_UNIQUE_NAME}_{PDB_NAME}.pdb 
+
+ALTER PLUGGABLE DATABASE PDB02 CLOSE IMMEDIATE;
+
+ALTER PLUGGABLE DATABASE PDB02 UNPLUG INTO 'C:\temp\PDBMOD\PDB02.XML';
+
+C:\app\lucas.souza\product\12.1.0\dbhome_1\assistants\dbca\templates\{DB_UNIQUE_NAME}_{PDB_NAME}.dfb
+C:\app\lucas.souza\product\12.1.0\dbhome_1\assistants\dbca\templates\{DB_UNIQUE_NAME}_{PDB_NAME}.xml
+
+CREATE PLUGGABLE DATABASE PDB01 
+USING 'C:\app\lucas.souza\product\12.1.0\dbhome_1\assistants\dbca\templates\_PDB02.xml' 
+COPY FILE_NAME_CONVERT= 
+(
+'C:\app\lucas.souza\oradata\CDB02\pdbseed',
+'C:\app\lucas.souza\oradata\CDB02\PDB02'
+);
+
+CREATE PLUGGABLE DATABASE PDB01 
+USING 'C:\app\lucas.souza\product\12.1.0\dbhome_1\assistants\dbca\templates\_PDB02.xml' NOCOPY TEMPFILE REUSE;
+
+CREATE PLUGGABLE DATABASE PDB03
+ADMIN USER PDB_ADMIN IDENTIFIED BY MANAGER
+FILE_NAME_CONVERT = 
+(
+'C:\app\lucas.souza\oradata\CDB02\pdbseed',
+'C:\app\lucas.souza\oradata\CDB02\PDB03'
+);  
+
+
+CREATE USER MANAGER 
+	IDENTIFIED BY MXM 
+	DEFAULT TABLESPACE MXMDAD 
+	QUOTA UNLIMITED ON MXMDAD 
+	QUOTA UNLIMITED ON MXMIDAD;
+
+GRANT MXMSYS,MXMDBA,CREATE SESSION TO MANAGER WITH ADMIN OPTION;
+GRANT CREATE TABLE,CREATE VIEW, CREATE SEQUENCE, CREATE PROCEDURE, CREATE TRIGGER, CREATE USER, ALTER USER, CREATE TYPE TO MANAGER  WITH ADMIN OPTION; 
+GRANT SELECT ON DBA_USERS TO MANAGER WITH GRANT OPTION;
+GRANT SELECT ON PROFILE$ TO MANAGER WITH GRANT OPTION;
+GRANT SELECT ON PROFNAME$ TO MANAGER WITH GRANT OPTION;	
+GRANT CREATE PUBLIC SYNONYM, DROP PUBLIC SYNONYM TO MANAGER;
+
+--TABLESPACE DE DADOS 
+CREATE SMALLFILE TABLESPACE "MXMDAD" 
+DATAFILE 
+'C:\APP\LUCAS.SOUZA\ORADATA\CDB02\PDB03\MXMDAD_001.DBF'
+SIZE 100M AUTOEXTEND ON NEXT 50M MAXSIZE 2000M, 
+'C:\APP\LUCAS.SOUZA\ORADATA\CDB02\PDB03\MXMDAD_002.DBF'
+SIZE 100M AUTOEXTEND ON NEXT 50M MAXSIZE 2000M 
+LOGGING
+EXTENT MANAGEMENT LOCAL 
+SEGMENT SPACE MANAGEMENT AUTO 
+DEFAULT NOCOMPRESS; 
+
+-- TABLESPACE DE INDICES 
+CREATE SMALLFILE TABLESPACE "MXMIDAD" 
+DATAFILE 
+'C:\APP\LUCAS.SOUZA\ORADATA\CDB02\PDB03\MXMIDAD_001.DBF'
+SIZE 100M AUTOEXTEND ON NEXT 50M MAXSIZE 2000M,
+'C:\APP\LUCAS.SOUZA\ORADATA\CDB02\PDB03\MXMIDAD_002.DBF'
+SIZE 100M AUTOEXTEND ON NEXT 50M MAXSIZE 2000M 
+LOGGING 
+EXTENT MANAGEMENT LOCAL 
+SEGMENT SPACE MANAGEMENT AUTO 
+DEFAULT NOCOMPRESS;  
+
+CREATE PLUGGABLE DATABASE PDB04 FROM PDB03 
+FILE_NAME_CONVERT=(
+'C:\app\lucas.souza\oradata\CDB02\PDB03',
+'C:\app\lucas.souza\oradata\CDB02\PDB04'
+);
+
++ =====================================
++  USER_ROLE_PRIVS --> roles          +
++  USER_SYS_PRIVS  --> Privilegios    + 
++ =====================================
+
+
+http://eduardolegatti.blogspot.com.br/2014/03/oracle-multitenant-clonando-e-movendo.html
+http://eduardolegatti.blogspot.com.br/2014/02/oracle-multitenant-abordando.html
