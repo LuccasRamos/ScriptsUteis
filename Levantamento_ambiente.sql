@@ -1,4 +1,4 @@
-SET LINES 1000  DEFINE OFF  COLSEP '|'  UNDERLINE '=' PAGES 100
+SET LINES 1000  DEFINE OFF  COLSEP '|'  UNDERLINE '=' PAGES 100   
 SPOOL LEVANTAMENTO_LOG.LOG
 PROMPT *******************************************************************
 PROMPT *       LEVANTAMENTO DE INFORMAÇÕES DO SERVIDOR DE BD             *
