@@ -1,5 +1,5 @@
 DECLARE  
-  TYPE F_ID_FATURA IS TABLE OF globo.faturas.id_fatura%TYPE;
+  TYPE F_ID_FATURA IS TABLE OF VARCHAR2(100);
   TYPE F_DATA_COMPRA IS TABLE OF globo.faturas.data_compra%TYPE;
   
   V_ID_FATURA F_ID_FATURA := F_ID_FATURA();
@@ -25,14 +25,14 @@ BEGIN
     V_ID_FATURA.extend;
     V_DATA_COMPRA.extend;
     
-    V_ID_FATURA(V_ID_FATURA.last) := x.id_fatura;
+    V_ID_FATURA(V_ID_FATURA.last) := x.id;
     V_DATA_COMPRA(V_DATA_COMPRA.last) := x.new_data_compra;
   
     idx := idx + 1;
   
     if (mod(idx,30000)=0)then 
       FORALL i in V_ID_FATURA.FIRST .. V_ID_FATURA.LAST 
-      	UPDATE globo.faturas SET data_teste = V_DATA_COMPRA(i) WHERE id_fatura = V_ID_FATURA(i);
+      	UPDATE globo.faturas SET data_teste = V_DATA_COMPRA(i) WHERE ROWID = V_ID_FATURA(i);
           V_ID_FATURA.delete;
           V_DATA_COMPRA.delete;
         commit;
@@ -40,4 +40,4 @@ BEGIN
     end if;   
   END LOOP;
 END;
-/ 
+/
