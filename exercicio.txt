@@ -1,0 +1,40 @@
+1- Define o que é instancia de banco de dados. 
+
+2- Define o que é um banco de dados. 
+
+3- Define o que é SGA. 
+
+4- Defina o que é processo de banco de dados. 
+
+5- quais as configurações atuais de uma instancia de banco de dados.
+
+6- diferença entre banco de dados de leitura e banco de dados de gravação
+
+7- quais as características de uma instancia de leitura. 
+
+8- Qual parametro de inicialização é utilizado para iniciar em modo leitura
+
+9- verificar quantos dias a instancia está ativa
+
+10- como ativar uma instancia 
+
+11- como desativar instancia 
+
+12 - Descreva o que é a OFA e as tres principais diretrizes.
+
+13- como posso configurar um oracle base apenas para bases congeladas para leitura
+
+14- Oque é o Oracle_net
+
+15- Defina quais os estágios evolvidos na etapa de inicialização de uma instância oracle. 
+
+16- Descreva as etapas da inicialização de uma INSTANCIA. 
+
+17- Descreva os passos de inicialização de um BANCO DE DADOS.
+
+18- defina o que é redolog
+
+19- Descreva quais são os passos para encerrar uma instancia 
+
+20 - Descreva os tipos de shutdowns disponíveis e qual funcionalidade de cada um. 
+ 
